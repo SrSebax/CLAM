@@ -7,10 +7,30 @@ body,
 }
 
 body {
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: 'Comic Neue', 'Comic Sans MS', cursive, sans-serif;
 }
 
 h1, h2, h3,
 .text-h1, .text-h2, .text-h3, .text-h4, .text-h5, .text-h6 {
-  font-family: 'Merriweather', Georgia, serif;
+  font-family: 'Chewy', 'Comic Neue', cursive;
+}
+
+.sparkle-cursor-particle {
+  position: fixed;
+  z-index: 9999;
+  pointer-events: none;
+  font-size: 1.1rem;
+  transform: translate(-50%, -50%);
+  animation: sparkle-float 0.7s ease-out forwards;
+}
+
+@keyframes sparkle-float {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -140%) scale(0.4);
+  }
 }

@@ -3,21 +3,12 @@ import { ref } from 'vue'
 import { useDisplay } from 'vuetify'
 import { useRouter } from 'vue-router'
 
-import { useAuthStore } from '@/stores/auth'
-
-const auth = useAuthStore()
 const router = useRouter()
 const { mdAndUp } = useDisplay()
 
 const drawer = ref(false)
 const searchOpen = ref(false)
 const searchQuery = ref('')
-
-async function handleLogout() {
-  await auth.logout()
-  drawer.value = false
-  router.push('/')
-}
 
 function runSearch() {
   if (!searchQuery.value.trim()) {
@@ -61,23 +52,6 @@ function runSearch() {
           />
         </v-expand-x-transition>
         <v-btn icon="mdi-magnify" variant="text" @click="searchOpen = !searchOpen" />
-
-        <template v-if="auth.isAuthenticated">
-          <v-btn v-if="auth.isAdmin" to="/admin" variant="text" prepend-icon="mdi-shield-account">
-            Admin
-          </v-btn>
-          <v-menu>
-            <template #activator="{ props: menuProps }">
-              <v-btn v-bind="menuProps" variant="text" prepend-icon="mdi-account-circle">
-                {{ auth.displayName }}
-              </v-btn>
-            </template>
-            <v-list>
-              <v-list-item prepend-icon="mdi-logout" title="Cerrar sesión" @click="handleLogout" />
-            </v-list>
-          </v-menu>
-        </template>
-        <v-btn v-else to="/auth/login" variant="tonal" color="primary">Iniciar sesión</v-btn>
       </template>
 
       <v-spacer v-else />
@@ -91,24 +65,6 @@ function runSearch() {
         to="/posts"
         title="Publicaciones"
         prepend-icon="mdi-post-outline"
-        @click="drawer = false"
-      />
-      <v-divider class="my-2" />
-      <template v-if="auth.isAuthenticated">
-        <v-list-item
-          v-if="auth.isAdmin"
-          to="/admin"
-          title="Panel admin"
-          prepend-icon="mdi-shield-account"
-          @click="drawer = false"
-        />
-        <v-list-item title="Cerrar sesión" prepend-icon="mdi-logout" @click="handleLogout" />
-      </template>
-      <v-list-item
-        v-else
-        to="/auth/login"
-        title="Iniciar sesión"
-        prepend-icon="mdi-login"
         @click="drawer = false"
       />
     </v-list>

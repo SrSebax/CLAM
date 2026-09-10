@@ -13,10 +13,6 @@ service cloud.firestore {
       return isSignedIn() && request.auth.token.admin == true;
     }
 
-    function isOwner(userId) {
-      return isSignedIn() && request.auth.uid == userId;
-    }
-
     // Valida que el update a un post de un doc de posts solo mueva en +-1 el
     // campo dado (contadores denormalizados de likes/comentarios) y nada más.
     function isSingleFieldStepChange(field) {
@@ -32,12 +28,12 @@ service cloud.firestore {
       allow read: if resource.data.status == 'published' || isAdmin();
       allow create, delete: if isAdmin();
 
-      // El admin puede editar cualquier campo. Un usuario autenticado solo puede
-      // mover en +-1 los contadores denormalizados (like/comment), y nada más,
-      // como resultado de las transacciones de likes.service.ts / comments.service.ts.
-      allow update: if isAdmin() || (isSignedIn() && (
-        isSingleFieldStepChange('likesCount') || isSingleFieldStepChange('commentsCount')
-      ));
+      // El admin puede editar cualquier campo. Cualquier visitante (sin sesión,
+      // ver comments/likes más abajo) solo puede mover en +-1 los contadores
+      // denormalizados (like/comment), y nada más, como resultado de las
+      // transacciones de likes.service.ts / comments.service.ts.
+      allow update: if isAdmin() ||
+        isSingleFieldStepChange('likesCount') || isSingleFieldStepChange('commentsCount');
     }
 
     // --- categories ---
@@ -47,12 +43,16 @@ service cloud.firestore {
     }
 
     // --- comments ---
+    // Sin cuentas de usuario: cualquier visitante puede comentar dando (o no)
+    // un nombre. No hay forma de verificar identidad real; el control de abuso
+    // queda en manos del admin vía moderación (ocultar/borrar).
     match /comments/{commentId} {
       allow read: if resource.data.status == 'visible' || isAdmin();
 
-      allow create: if isSignedIn()
-        && request.resource.data.userId == request.auth.uid
-        && request.resource.data.postId is string
+      allow create: if request.resource.data.postId is string
+        && request.resource.data.userId is string
+        && request.resource.data.userName is string
+        && request.resource.data.userName.size() <= 80
         && request.resource.data.status == 'visible'
         && request.resource.data.text is string
         && request.resource.data.text.size() > 0
@@ -63,16 +63,17 @@ service cloud.firestore {
     }
 
     // --- likes ---
+    // El id del documento es "{postId}_{anonId}", donde anonId es un id random
+    // generado en el navegador (localStorage, ver src/composables/useAnonId.ts).
+    // Sin cuentas no hay forma de atar el Like a una identidad real; solo se
+    // valida la forma del documento y del id determinístico.
     match /likes/{likeId} {
-      allow read: if isSignedIn();
+      allow read: if true;
 
-      // El id del documento debe ser exactamente "{postId}_{uid}" para que cada
-      // usuario solo pueda tener un Like por publicación.
-      allow create: if isSignedIn()
-        && request.resource.data.userId == request.auth.uid
-        && likeId == request.resource.data.postId + '_' + request.auth.uid;
+      allow create: if request.resource.data.userId is string
+        && likeId == request.resource.data.postId + '_' + request.resource.data.userId;
 
-      allow delete: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow delete: if resource.data.userId is string;
       allow update: if false;
     }
 
@@ -80,14 +81,6 @@ service cloud.firestore {
     match /settings/{settingId} {
       allow read: if true;
       allow write: if isAdmin();
-    }
-
-    // --- users ---
-    match /users/{userId} {
-      allow get: if isOwner(userId) || isAdmin();
-      allow list: if isAdmin();
-      allow create: if isOwner(userId);
-      allow update, delete: if isAdmin();
     }
 
     // Todo lo no contemplado explícitamente queda denegado.

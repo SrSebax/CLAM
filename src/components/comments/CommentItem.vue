@@ -9,8 +9,7 @@ defineEmits<{ delete: [comment: Comment] }>()
 <template>
   <div class="d-flex ga-3 py-3">
     <v-avatar size="36" color="primary" variant="tonal">
-      <v-img v-if="comment.userPhotoURL" :src="comment.userPhotoURL" />
-      <span v-else>{{ comment.userName.charAt(0).toUpperCase() }}</span>
+      <span>{{ comment.userName.charAt(0).toUpperCase() }}</span>
     </v-avatar>
     <div class="flex-grow-1">
       <div class="d-flex align-center ga-2">

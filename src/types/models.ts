@@ -1,16 +1,5 @@
 import type { Timestamp } from 'firebase/firestore'
 
-export type UserRole = 'user' | 'admin'
-
-export interface AppUser {
-  uid: string
-  email: string
-  displayName: string
-  photoURL: string | null
-  role: UserRole
-  createdAt: Timestamp
-}
-
 export type PostStatus = 'draft' | 'published'
 
 export interface PostAttachment {
@@ -52,7 +41,6 @@ export interface Comment {
   postId: string
   userId: string
   userName: string
-  userPhotoURL: string | null
   text: string
   status: CommentStatus
   parentId: string | null
@@ -87,6 +75,8 @@ export interface SiteSettings {
   welcomeText: string
   primaryColor: string
   secondaryColor: string
+  marqueeText: string
+  musicYoutubeIds: string[]
   updatedAt: Timestamp | null
 }
 

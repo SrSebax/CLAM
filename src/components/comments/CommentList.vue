@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 
+import { getAnonId } from '@/composables/useAnonId'
 import { addComment, deleteComment, listVisibleComments } from '@/services/comments.service'
 import { useAuthStore } from '@/stores/auth'
 import { useConfirmStore } from '@/stores/confirm'
@@ -30,10 +31,9 @@ async function load() {
 
 onMounted(load)
 
-async function handleSubmit(text: string) {
-  if (!auth.user) return
+async function handleSubmit(name: string, text: string) {
   try {
-    await addComment(props.postId, auth.user.uid, auth.displayName, auth.user.photoURL, text)
+    await addComment(props.postId, getAnonId(), name, text)
     await load()
     toast.success('Comentario publicado.')
   } catch {

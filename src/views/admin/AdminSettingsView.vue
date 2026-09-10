@@ -3,6 +3,7 @@ import { onMounted, ref } from 'vue'
 
 import BannerUploadField from '@/components/admin/BannerUploadField.vue'
 import ColorField from '@/components/admin/ColorField.vue'
+import YoutubeLinksField from '@/components/admin/YoutubeLinksField.vue'
 import { useSiteTheme } from '@/composables/useSiteTheme'
 import { getSiteSettings, updateSiteSettings } from '@/services/settings.service'
 import { useSiteSettingsStore } from '@/stores/siteSettings'
@@ -21,8 +22,10 @@ const welcomeTitle = ref('')
 const welcomeText = ref('')
 const bannerImageUrl = ref<string | null>(null)
 const bannerImagePath = ref<string | null>(null)
-const primaryColor = ref('#2A5DB0')
-const secondaryColor = ref('#D9782E')
+const primaryColor = ref('#FF1493')
+const secondaryColor = ref('#9B30FF')
+const marqueeText = ref('')
+const musicYoutubeIds = ref<string[]>([])
 
 onMounted(async () => {
   loading.value = true
@@ -35,6 +38,8 @@ onMounted(async () => {
     bannerImagePath.value = settings.bannerImagePath
     primaryColor.value = settings.primaryColor
     secondaryColor.value = settings.secondaryColor
+    marqueeText.value = settings.marqueeText
+    musicYoutubeIds.value = settings.musicYoutubeIds
   } finally {
     loading.value = false
   }
@@ -60,6 +65,8 @@ async function save() {
       bannerImagePath: bannerImagePath.value,
       primaryColor: primaryColor.value,
       secondaryColor: secondaryColor.value,
+      marqueeText: marqueeText.value.trim(),
+      musicYoutubeIds: musicYoutubeIds.value,
     })
     await siteSettingsStore.load(true)
     toast.success('Ajustes guardados. Ya son visibles para todos los visitantes.')
@@ -88,12 +95,24 @@ async function save() {
       <v-text-field v-model="welcomeTitle" label="Título del bloque de bienvenida" class="mb-4" />
       <v-textarea v-model="welcomeText" label="Texto de bienvenida" rows="3" auto-grow class="mb-6" />
 
+      <v-text-field
+        v-model="marqueeText"
+        label="Texto del marquee (banda con letrero que se mueve)"
+        class="mb-6"
+      />
+
       <p class="text-subtitle-2 mb-2">Colores del sitio</p>
       <p class="text-caption text-medium-emphasis mb-3">
         Color principal (botones, enlaces) y secundario (acentos, categorías).
       </p>
       <ColorField v-model="primaryColor" label="Color principal" class="mb-3" @update:model-value="previewColors" />
       <ColorField v-model="secondaryColor" label="Color secundario" class="mb-6" @update:model-value="previewColors" />
+
+      <p class="text-subtitle-2 mb-2">Música MP3</p>
+      <p class="text-caption text-medium-emphasis mb-3">
+        Pega links de YouTube de las canciones. Se reproducen en el reproductor flotante del sitio.
+      </p>
+      <YoutubeLinksField v-model="musicYoutubeIds" class="mb-6" />
 
       <v-btn type="submit" color="primary" :loading="saving">Guardar cambios</v-btn>
     </v-form>

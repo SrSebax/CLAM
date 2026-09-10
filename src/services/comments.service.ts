@@ -20,7 +20,6 @@ export async function addComment(
   postId: string,
   userId: string,
   userName: string,
-  userPhotoURL: string | null,
   text: string,
 ): Promise<void> {
   await runTransaction(db, async (tx) => {
@@ -29,8 +28,7 @@ export async function addComment(
     tx.set(ref, {
       postId,
       userId,
-      userName,
-      userPhotoURL,
+      userName: userName.trim() || 'Anónimo',
       text,
       status: 'visible' satisfies CommentStatus,
       parentId: null,

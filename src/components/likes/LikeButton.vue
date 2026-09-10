@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import { useRouter } from 'vue-router'
 
+import { getAnonId } from '@/composables/useAnonId'
 import { addLike, hasLiked, removeLike } from '@/services/likes.service'
-import { useAuthStore } from '@/stores/auth'
 import { useToastStore } from '@/stores/toast'
 
 const props = defineProps<{
@@ -11,8 +10,6 @@ const props = defineProps<{
   likesCount: number
 }>()
 
-const auth = useAuthStore()
-const router = useRouter()
 const toast = useToastStore()
 
 const liked = ref(false)
@@ -20,25 +17,19 @@ const count = ref(props.likesCount)
 const loading = ref(false)
 
 onMounted(async () => {
-  if (auth.isAuthenticated && auth.user) {
-    liked.value = await hasLiked(props.postId, auth.user.uid)
-  }
+  liked.value = await hasLiked(props.postId, getAnonId())
 })
 
 async function toggle() {
-  if (!auth.isAuthenticated || !auth.user) {
-    router.push({ name: 'login', query: { redirect: router.currentRoute.value.fullPath } })
-    return
-  }
-
   loading.value = true
   try {
+    const anonId = getAnonId()
     if (liked.value) {
-      await removeLike(props.postId, auth.user.uid)
+      await removeLike(props.postId, anonId)
       liked.value = false
       count.value -= 1
     } else {
-      await addLike(props.postId, auth.user.uid)
+      await addLike(props.postId, anonId)
       liked.value = true
       count.value += 1
     }

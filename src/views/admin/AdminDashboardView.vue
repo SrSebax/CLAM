@@ -5,25 +5,21 @@ import StatCard from '@/components/admin/StatCard.vue'
 import { getCommentCount } from '@/services/comments.service'
 import { getLikeCount } from '@/services/likes.service'
 import { getPostCounts, type PostCounts } from '@/services/posts.service'
-import { getUserCount } from '@/services/users.service'
 
 const loading = ref(true)
 const postCounts = ref<PostCounts>({ total: 0, published: 0, draft: 0 })
-const userCount = ref(0)
 const commentCount = ref(0)
 const likeCount = ref(0)
 
 onMounted(async () => {
   loading.value = true
   try {
-    const [posts, users, comments, likes] = await Promise.all([
+    const [posts, comments, likes] = await Promise.all([
       getPostCounts(),
-      getUserCount(),
       getCommentCount(),
       getLikeCount(),
     ])
     postCounts.value = posts
-    userCount.value = users
     commentCount.value = comments
     likeCount.value = likes
   } finally {
@@ -51,9 +47,6 @@ onMounted(async () => {
       </v-col>
       <v-col cols="12" sm="6" md="4">
         <StatCard icon="mdi-file-edit-outline" label="Borradores" :value="postCounts.draft" color="warning" />
-      </v-col>
-      <v-col cols="12" sm="6" md="4">
-        <StatCard icon="mdi-account-group-outline" label="Usuarios" :value="userCount" />
       </v-col>
       <v-col cols="12" sm="6" md="4">
         <StatCard icon="mdi-comment-outline" label="Comentarios" :value="commentCount" />

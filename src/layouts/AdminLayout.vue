@@ -12,7 +12,6 @@ const links = [
   { to: '/admin', title: 'Dashboard', icon: 'mdi-view-dashboard-outline', exact: true },
   { to: '/admin/posts', title: 'Publicaciones', icon: 'mdi-post-outline' },
   { to: '/admin/comments', title: 'Comentarios', icon: 'mdi-comment-outline' },
-  { to: '/admin/users', title: 'Usuarios', icon: 'mdi-account-group-outline' },
   { to: '/admin/settings', title: 'Ajustes del sitio', icon: 'mdi-cog-outline' },
 ]
 

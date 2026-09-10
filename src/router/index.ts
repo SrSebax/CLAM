@@ -10,9 +10,12 @@ const routes: RouteRecordRaw[] = [
       { path: '', name: 'home', component: () => import('@/views/public/HomeView.vue') },
       { path: 'posts', name: 'posts-list', component: () => import('@/views/public/PostsListView.vue') },
       { path: 'post/:id', name: 'post-detail', component: () => import('@/views/public/PostDetailView.vue'), props: true },
-      { path: 'auth/login', name: 'login', component: () => import('@/views/auth/LoginView.vue') },
-      { path: 'auth/register', name: 'register', component: () => import('@/views/auth/RegisterView.vue') },
     ],
+  },
+  {
+    path: '/admin/login',
+    name: 'admin-login',
+    component: () => import('@/views/admin/AdminLoginView.vue'),
   },
   {
     path: '/admin',
@@ -29,7 +32,6 @@ const routes: RouteRecordRaw[] = [
         props: true,
       },
       { path: 'comments', name: 'admin-comments', component: () => import('@/views/admin/AdminCommentsView.vue') },
-      { path: 'users', name: 'admin-users', component: () => import('@/views/admin/AdminUsersView.vue') },
       { path: 'settings', name: 'admin-settings', component: () => import('@/views/admin/AdminSettingsView.vue') },
     ],
   },
@@ -55,7 +57,7 @@ router.beforeEach(async (to) => {
   if (!auth.initialized) await auth.ready
 
   if (!auth.isAuthenticated) {
-    return { name: 'login', query: { redirect: to.fullPath } }
+    return { name: 'admin-login', query: { redirect: to.fullPath } }
   }
   if (!auth.isAdmin) {
     return { name: 'not-found' }

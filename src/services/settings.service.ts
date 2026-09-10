@@ -11,8 +11,10 @@ const DEFAULTS: SiteSettings = {
   siteTitle: 'CLAM',
   welcomeTitle: 'Bienvenidos',
   welcomeText: 'Un espacio para publicar, descubrir y conversar sobre las ideas que importan.',
-  primaryColor: '#2A5DB0',
-  secondaryColor: '#D9782E',
+  primaryColor: '#FF1493',
+  secondaryColor: '#9B30FF',
+  marqueeText: '★ GRACIAS POR VISITAR MI BLOG ★ DEJA UN COMENTARIO ★ VUELVE PRONTO ★',
+  musicYoutubeIds: [],
   updatedAt: null,
 }
 

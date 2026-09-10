@@ -5,12 +5,9 @@ import { computed, ref } from 'vue'
 import {
   ensurePersistence,
   loginWithEmail,
-  loginWithGoogle,
   logout as logoutService,
-  registerWithEmail,
   watchAuthState,
 } from '@/services/auth.service'
-import { ensureUserDocument } from '@/services/users.service'
 
 // TODO(firestore-auth): la fuente de verdad para autorización en Firestore/Storage Rules
 // son los Custom Claims (claims.admin). Mientras no se ejecute el script
@@ -49,8 +46,6 @@ export const useAuthStore = defineStore('auth', () => {
 
       if (firebaseUser) {
         await syncClaims(firebaseUser)
-        const isAdminEmail = !!ADMIN_EMAIL && firebaseUser.email === ADMIN_EMAIL
-        void ensureUserDocument(firebaseUser, isAdminEmail || hasAdminClaim.value)
       }
 
       if (!initialized.value) {
@@ -63,16 +58,6 @@ export const useAuthStore = defineStore('auth', () => {
   async function login(email: string, password: string) {
     await ensurePersistence()
     user.value = await loginWithEmail(email, password)
-  }
-
-  async function register(email: string, password: string, name: string) {
-    await ensurePersistence()
-    user.value = await registerWithEmail(email, password, name)
-  }
-
-  async function loginGoogle() {
-    await ensurePersistence()
-    user.value = await loginWithGoogle()
   }
 
   async function logout() {
@@ -90,8 +75,6 @@ export const useAuthStore = defineStore('auth', () => {
     displayName,
     init,
     login,
-    register,
-    loginGoogle,
     logout,
   }
 })
