@@ -2,7 +2,14 @@
 import { ref } from 'vue'
 
 import { useToastStore } from '@/stores/toast'
-import { parseYoutubeId, youtubeThumbnail } from '@/utils/youtube'
+import {
+  fromPlaylistEntry,
+  isPlaylistEntry,
+  parseYoutubeId,
+  parseYoutubePlaylistId,
+  toPlaylistEntry,
+  youtubeThumbnail,
+} from '@/utils/youtube'
 
 const videoIds = defineModel<string[]>({ required: true })
 
@@ -10,6 +17,18 @@ const toast = useToastStore()
 const urlInput = ref('')
 
 function addVideo() {
+  const playlistId = parseYoutubePlaylistId(urlInput.value)
+  if (playlistId) {
+    const entry = toPlaylistEntry(playlistId)
+    if (videoIds.value.includes(entry)) {
+      toast.error('Esa playlist ya está agregada.')
+      return
+    }
+    videoIds.value = [...videoIds.value, entry]
+    urlInput.value = ''
+    return
+  }
+
   const id = parseYoutubeId(urlInput.value)
   if (!id) {
     toast.error('No se reconoció esa URL de YouTube.')
@@ -33,7 +52,7 @@ function removeVideo(id: string) {
     <div class="d-flex ga-2 mb-3">
       <v-text-field
         v-model="urlInput"
-        label="Pega una URL de YouTube"
+        label="Pega una URL de YouTube (video o playlist completa)"
         density="comfortable"
         hide-details
         @keyup.enter="addVideo"
@@ -43,7 +62,12 @@ function removeVideo(id: string) {
 
     <div v-if="videoIds.length" class="video-grid">
       <div v-for="id in videoIds" :key="id" class="video-item">
-        <v-img :src="youtubeThumbnail(id)" aspect-ratio="16/9" cover class="rounded" />
+        <v-img v-if="!isPlaylistEntry(id)" :src="youtubeThumbnail(id)" aspect-ratio="16/9" cover class="rounded" />
+        <div v-else class="playlist-tile rounded">
+          <span class="mdi mdi-playlist-music" />
+          <span class="playlist-tile-label">Playlist</span>
+          <span class="playlist-tile-id">{{ fromPlaylistEntry(id) }}</span>
+        </div>
         <v-btn
           icon="mdi-close"
           size="small"
@@ -66,6 +90,31 @@ function removeVideo(id: string) {
 }
 .video-item {
   position: relative;
+}
+.playlist-tile {
+  aspect-ratio: 16 / 9;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  background: rgb(var(--v-theme-secondary));
+  color: #fff;
+}
+.playlist-tile .mdi {
+  font-size: 28px;
+}
+.playlist-tile-label {
+  font-weight: 700;
+  font-size: 0.8rem;
+}
+.playlist-tile-id {
+  font-size: 0.65rem;
+  opacity: 0.8;
+  max-width: 90%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .remove-btn {
   position: absolute;

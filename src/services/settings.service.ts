@@ -15,6 +15,7 @@ const DEFAULTS: SiteSettings = {
   secondaryColor: '#9B30FF',
   marqueeText: '★ GRACIAS POR VISITAR MI BLOG ★ DEJA UN COMENTARIO ★ VUELVE PRONTO ★',
   musicYoutubeIds: [],
+  playlistYoutubeIds: [],
   updatedAt: null,
 }
 

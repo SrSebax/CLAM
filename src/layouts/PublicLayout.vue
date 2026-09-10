@@ -2,8 +2,10 @@
 import AppFooter from '@/components/layout/AppFooter.vue'
 import AppNavbar from '@/components/layout/AppNavbar.vue'
 import AppSidebar from '@/components/layout/AppSidebar.vue'
+import LiveChat from '@/components/layout/LiveChat.vue'
 import MarqueeBar from '@/components/layout/MarqueeBar.vue'
 import MusicPlayer from '@/components/layout/MusicPlayer.vue'
+import PlaylistPlayer from '@/components/layout/PlaylistPlayer.vue'
 import SiteBanner from '@/components/layout/SiteBanner.vue'
 
 import { useSparkleCursor } from '@/composables/useSparkleCursor'
@@ -32,15 +34,24 @@ useSparkleCursor()
             </v-col>
           </v-row>
         </v-container>
+
+        <MusicPlayer
+          v-if="siteSettings.settings?.musicYoutubeIds.length"
+          class="side-rail side-rail-right"
+          :video-ids="siteSettings.settings.musicYoutubeIds"
+        />
+
+        <div class="side-rail side-rail-left">
+          <PlaylistPlayer
+            v-if="siteSettings.settings?.playlistYoutubeIds.length"
+            :video-ids="siteSettings.settings.playlistYoutubeIds"
+          />
+          <LiveChat />
+        </div>
       </div>
     </v-main>
 
     <AppFooter />
-
-    <MusicPlayer
-      v-if="siteSettings.settings?.musicYoutubeIds.length"
-      :video-ids="siteSettings.settings.musicYoutubeIds"
-    />
   </v-app>
 </template>
 
@@ -57,11 +68,35 @@ useSparkleCursor()
   background-size: 140px 140px;
 }
 .page-frame {
-  max-width: 1240px;
+  position: relative;
+  max-width: 900px;
   margin: 0 auto;
   background: rgb(var(--v-theme-surface));
   min-height: 100%;
   border-left: 3px dashed rgb(var(--v-theme-primary));
   border-right: 3px dashed rgb(var(--v-theme-primary));
+}
+
+.side-rail {
+  position: absolute;
+  top: 260px;
+  width: 200px;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+.side-rail-left {
+  left: -230px;
+}
+.side-rail-right {
+  right: -220px;
+}
+
+@media (max-width: 1300px) {
+  .side-rail {
+    display: none;
+  }
 }
 </style>

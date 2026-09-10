@@ -77,6 +77,20 @@ service cloud.firestore {
       allow update: if false;
     }
 
+    // --- chatMessages (chat en vivo, sin cuentas; el admin puede moderar borrando) ---
+    match /chatMessages/{messageId} {
+      allow read: if true;
+
+      allow create: if request.resource.data.userId is string
+        && request.resource.data.userName is string
+        && request.resource.data.userName.size() <= 40
+        && request.resource.data.text is string
+        && request.resource.data.text.size() > 0
+        && request.resource.data.text.size() <= 300;
+
+      allow delete: if isAdmin();
+    }
+
     // --- settings (configuración pública del sitio: banner, textos de bienvenida) ---
     match /settings/{settingId} {
       allow read: if true;

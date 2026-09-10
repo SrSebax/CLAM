@@ -1,5 +1,7 @@
 <script setup lang="ts">
-withDefaults(defineProps<{ text: string; sparkleCount?: number }>(), { sparkleCount: 10 })
+withDefaults(defineProps<{ text: string; tagline?: string; sparkleCount?: number }>(), {
+  sparkleCount: 10,
+})
 
 const SPARKLES = ['✦', '✧', '★', '☆', '✨']
 
@@ -11,7 +13,10 @@ function randomSparkle(seed: number) {
 <template>
   <div class="glitter-title-wrap">
     <span v-for="n in sparkleCount" :key="n" class="sparkle" :style="{ '--i': n }">{{ randomSparkle(n) }}</span>
-    <h1 class="glitter-text">{{ text }}</h1>
+    <div class="glitter-title-inner">
+      <h1 class="glitter-text">{{ text }}</h1>
+      <p v-if="tagline" class="glitter-tagline">{{ tagline }}</p>
+    </div>
   </div>
 </template>
 
@@ -21,22 +26,41 @@ function randomSparkle(seed: number) {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0.5rem 1rem;
+  padding: 1rem 1rem 0.5rem;
+}
+
+.glitter-title-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .glitter-text {
   font-family: 'Chewy', 'Comic Neue', cursive;
-  font-size: clamp(2rem, 6vw, 3.5rem);
+  font-size: clamp(3rem, 10vw, 5.5rem);
   text-align: center;
   margin: 0;
-  background: linear-gradient(90deg, #ff1493, #ff69b4, #ba55d3, #ff1493);
+  background: linear-gradient(90deg, #ff1493, #ff69b4, #ba55d3, #00cfff, #ff1493);
   background-size: 300% 100%;
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  -webkit-text-stroke: 1px rgba(255, 255, 255, 0.6);
+  -webkit-text-stroke: 2px rgba(255, 255, 255, 0.75);
   animation: shimmer 4s linear infinite;
-  text-shadow: 0 2px 12px rgba(255, 20, 147, 0.35);
+  text-shadow: 0 4px 18px rgba(255, 20, 147, 0.45);
+  letter-spacing: 2px;
+}
+
+.glitter-tagline {
+  font-family: 'Comic Neue', cursive;
+  font-weight: 700;
+  font-size: clamp(0.7rem, 1.6vw, 0.95rem);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #9b30ff;
+  text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.8);
+  text-align: center;
+  margin: 0.2rem 0 0;
 }
 
 @keyframes shimmer {

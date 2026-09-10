@@ -26,6 +26,7 @@ const primaryColor = ref('#FF1493')
 const secondaryColor = ref('#9B30FF')
 const marqueeText = ref('')
 const musicYoutubeIds = ref<string[]>([])
+const playlistYoutubeIds = ref<string[]>([])
 
 onMounted(async () => {
   loading.value = true
@@ -40,6 +41,7 @@ onMounted(async () => {
     secondaryColor.value = settings.secondaryColor
     marqueeText.value = settings.marqueeText
     musicYoutubeIds.value = settings.musicYoutubeIds
+    playlistYoutubeIds.value = settings.playlistYoutubeIds
   } finally {
     loading.value = false
   }
@@ -67,6 +69,7 @@ async function save() {
       secondaryColor: secondaryColor.value,
       marqueeText: marqueeText.value.trim(),
       musicYoutubeIds: musicYoutubeIds.value,
+      playlistYoutubeIds: playlistYoutubeIds.value,
     })
     await siteSettingsStore.load(true)
     toast.success('Ajustes guardados. Ya son visibles para todos los visitantes.')
@@ -113,6 +116,12 @@ async function save() {
         Pega links de YouTube de las canciones. Se reproducen en el reproductor flotante del sitio.
       </p>
       <YoutubeLinksField v-model="musicYoutubeIds" class="mb-6" />
+
+      <p class="text-subtitle-2 mb-2">Playlist de video</p>
+      <p class="text-caption text-medium-emphasis mb-3">
+        Pega links de YouTube de los videos. Se muestran en el reproductor de video del lado izquierdo del sitio.
+      </p>
+      <YoutubeLinksField v-model="playlistYoutubeIds" class="mb-6" />
 
       <v-btn type="submit" color="primary" :loading="saving">Guardar cambios</v-btn>
     </v-form>

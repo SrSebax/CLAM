@@ -47,6 +47,14 @@ export interface Comment {
   createdAt: Timestamp
 }
 
+export interface ChatMessage {
+  id: string
+  userId: string
+  userName: string
+  text: string
+  createdAt: Timestamp
+}
+
 export interface Like {
   id: string
   postId: string
@@ -77,6 +85,7 @@ export interface SiteSettings {
   secondaryColor: string
   marqueeText: string
   musicYoutubeIds: string[]
+  playlistYoutubeIds: string[]
   updatedAt: Timestamp | null
 }
 

@@ -102,13 +102,6 @@ function handleBarClick(event: MouseEvent) {
 </template>
 
 <style scoped>
-.ipod {
-  position: fixed;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 100;
-}
 .ipod-body {
   width: 168px;
   padding: 14px 12px 18px;

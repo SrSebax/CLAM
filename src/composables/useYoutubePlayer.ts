@@ -7,12 +7,15 @@ interface YTPlayer {
   pauseVideo(): void
   seekTo(seconds: number, allowSeekAhead: boolean): void
   loadVideoById(videoId: string): void
+  loadPlaylist(options: { list: string; listType: 'playlist'; index?: number }): void
+  nextVideo(): void
+  previousVideo(): void
   getCurrentTime(): number
   getDuration(): number
   destroy(): void
 }
 interface YTPlayerOptions {
-  videoId: string
+  videoId?: string
   playerVars?: Record<string, number | string>
   events?: {
     onReady?: () => void
@@ -72,13 +75,23 @@ export function useYoutubePlayer(elementId: string, onEnded?: () => void) {
     }, 500)
   }
 
-  async function create(initialId: string) {
+  async function create(initial: { videoId: string } | { listId: string }) {
     await loadYoutubeApi()
     if (!window.YT) return
 
+    const baseVars = {
+      controls: 0,
+      disablekb: 1,
+      playsinline: 1,
+      fs: 0,
+      modestbranding: 1,
+      rel: 0,
+      iv_load_policy: 3,
+    }
     player = new window.YT.Player(elementId, {
-      videoId: initialId,
-      playerVars: { controls: 0, disablekb: 1, playsinline: 1 },
+      ...('videoId' in initial
+        ? { videoId: initial.videoId, playerVars: baseVars }
+        : { playerVars: { ...baseVars, listType: 'playlist' as const, list: initial.listId } }),
       events: {
         onReady: () => {
           ready.value = true
@@ -108,8 +121,26 @@ export function useYoutubePlayer(elementId: string, onEnded?: () => void) {
     if (player && ready.value) {
       player.loadVideoById(id)
     } else {
-      void create(id)
+      void create({ videoId: id })
     }
+  }
+
+  function loadPlaylist(listId: string) {
+    currentTime.value = 0
+    duration.value = 0
+    if (player && ready.value) {
+      player.loadPlaylist({ list: listId, listType: 'playlist' })
+    } else {
+      void create({ listId })
+    }
+  }
+
+  function nextVideo() {
+    player?.nextVideo()
+  }
+
+  function previousVideo() {
+    player?.previousVideo()
   }
 
   onBeforeUnmount(() => {
@@ -131,5 +162,5 @@ export function useYoutubePlayer(elementId: string, onEnded?: () => void) {
     currentTime.value = seconds
   }
 
-  return { playing, currentTime, duration, toggle, seekTo, loadVideo }
+  return { playing, currentTime, duration, toggle, seekTo, loadVideo, loadPlaylist, nextVideo, previousVideo }
 }

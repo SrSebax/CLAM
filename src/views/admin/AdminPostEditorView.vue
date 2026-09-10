@@ -178,7 +178,6 @@ async function save(status: PostStatus) {
       <v-text-field
         v-model="tagsInput"
         label="Etiquetas (separadas por coma)"
-        hint="ej: vue, firebase, tutorial"
         persistent-hint
         class="mb-4"
       />

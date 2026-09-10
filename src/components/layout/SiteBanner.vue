@@ -7,7 +7,10 @@ const store = useSiteSettingsStore()
 
 <template>
   <div>
-    <GlitterText :text="store.settings?.siteTitle ?? 'CLAM'" />
+    <GlitterText
+      :text="store.settings?.siteTitle ?? 'CLAM'"
+      tagline="Cultura · Lenguaje · Aprendizaje · Memoria"
+    />
 
     <div class="site-banner">
       <v-img v-if="store.settings?.bannerImageUrl" :src="store.settings.bannerImageUrl" height="220" cover />
